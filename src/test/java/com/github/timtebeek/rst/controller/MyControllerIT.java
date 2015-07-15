@@ -35,7 +35,6 @@ public class MyControllerIT {
 	public void testHelloOAuth2WithoutRole() {
 		OAuth2RestTemplate restTemplate = OAuthHelper.withoutMyscope(host + "/oauth/token");
 		log.info("{}", restTemplate.getAccessToken().getValue());
-		ResponseEntity<String> entity = restTemplate.getForEntity(host + "/hello", String.class);
-		assertTrue(entity.getStatusCode().is2xxSuccessful());
+		restTemplate.getForEntity(host + "/hello", String.class);
 	}
 }
