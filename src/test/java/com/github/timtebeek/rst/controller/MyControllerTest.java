@@ -1,5 +1,7 @@
 package com.github.timtebeek.rst.controller;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -11,6 +13,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -25,7 +29,7 @@ public class MyControllerTest {
 	@Autowired
 	private WebApplicationContext webapp;
 
-	private MockMvc	mvc;
+	private MockMvc mvc;
 
 	@Before
 	public void before() {
@@ -34,13 +38,32 @@ public class MyControllerTest {
 
 	@Test
 	@WithMockUser(roles = "myrole")
-	public void testHelloWithRole() throws Exception {
+	public void testHelloAnnotationWithRole() throws Exception {
 		mvc.perform(get("/hello")).andDo(print()).andExpect(status().isOk());
 	}
 
 	@Test
 	@WithMockUser
-	public void testHelloWihtoutRole() throws Exception {
+	public void testHelloAnnotationWithoutRole() throws Exception {
 		mvc.perform(get("/hello")).andDo(print()).andExpect(status().isOk());
+	}
+
+	@Test
+	public void testHelloAuthenticationWithRole() throws Exception {
+		mvc.perform(get("/hello").with(authentication(token("myrole")))).andDo(print()).andExpect(status().isOk());
+	}
+
+	@Test
+	public void testHelloAuthenticationWithoutRole() throws Exception {
+		mvc.perform(get("/hello").with(authentication(token("unrelatedrole")))).andDo(print()).andExpect(status().isOk());
+	}
+
+	@Test
+	public void testHelloUser() throws Exception {
+		mvc.perform(get("/hello").with(user("user"))).andDo(print()).andExpect(status().isOk());
+	}
+
+	private static Authentication token(final String role) {
+		return new TestingAuthenticationToken("user", null, role);
 	}
 }
