@@ -5,11 +5,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Arrays;
-import java.util.HashSet;
-
 import com.github.timtebeek.rst.MyApp;
-import com.github.timtebeek.rst.OAuthHelper;
+import com.github.timtebeek.rst.config.OAuthHelper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,13 +24,16 @@ import org.springframework.web.context.WebApplicationContext;
 @WebAppConfiguration
 public class MyControllerTest {
 	@Autowired
-	private WebApplicationContext webapp;
+	private WebApplicationContext	webapp;
 
-	private MockMvc mvc;
+	private MockMvc					mvc;
 
 	@Before
 	public void before() {
-		mvc = MockMvcBuilders.webAppContextSetup(webapp).apply(springSecurity()).build();
+		mvc = MockMvcBuilders.webAppContextSetup(webapp)
+				.apply(springSecurity())
+				.alwaysDo(print())
+				.build();
 	}
 
 	@Autowired
@@ -41,13 +41,13 @@ public class MyControllerTest {
 
 	@Test
 	public void testHelloWithRole() throws Exception {
-		RequestPostProcessor bearerToken = helper.bearerToken("myclientwith", new HashSet<>(Arrays.asList("myscope")), "user");
-		mvc.perform(get("/hello").with(bearerToken)).andDo(print()).andExpect(status().isOk());
+		RequestPostProcessor bearerToken = helper.bearerToken("myclientwith");
+		mvc.perform(get("/hello").with(bearerToken)).andExpect(status().isOk());
 	}
 
 	@Test
 	public void testHelloWithoutRole() throws Exception {
-		RequestPostProcessor bearerToken = helper.bearerToken("myclientwithout", new HashSet<>(Arrays.asList("noscope")), "user");
-		mvc.perform(get("/hello").with(bearerToken)).andDo(print()).andExpect(status().isForbidden());
+		RequestPostProcessor bearerToken = helper.bearerToken("myclientwithout");
+		mvc.perform(get("/hello").with(bearerToken)).andExpect(status().isForbidden());
 	}
 }
