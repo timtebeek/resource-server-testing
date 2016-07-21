@@ -1,0 +1,37 @@
+resource-server-testing:
+  oauth2:
+    jwt:
+      private-key-value: |
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEpAIBAAKCAQEA1Bw65a5/X1tPIMGOttWYb3xq2oySMtTmFCGgXv/mLdoNSUO/
+        DhTN2lcOQcqdHcJNhoSdxrV777/F1+j94+Orj7iEMHVw6cew9FGn6LwqULrtn3YD
+        AQXxT8uI28L+SXgvY+xQ2wAOwutse00g+YL0Ba8U63avB7AYAgQDkMr7xY9LwwHc
+        UtMwqRCuEc4sbfnXv+jMu6V3lNCYd1l8k6IEJbLZjw5eZgBKYm5THeDOEyhAAgb2
+        2cp8quDrgQDRNnnnGpPCMM8QvKraRdjIAVeMR5qUhcp9fUtkTF8RKafbgbIST6pq
+        P+8PVQkT4uNaQS5zAzyK+kPjLm+kL0lOAPUnawIDAQABAoIBAFNW/DU+iMFYyRBf
+        vMlNx2UWh41zagYa7IPAapipBzHA2TOOMMVBm1hMmEd1aqJEs91EwhFPQXED8qJQ
+        42DlFYWUxCueGU1hrr9wTf7938p0h+T9o1SFlzj5Cb7/MJaBaG1kbqh9r08a3Tbd
+        KTWgJG0PS7LwoPjuUaCJHzWG68HFQpwTdbDOCGZ6dNvPquF7cmYEEIBvLUB6YgBC
+        vdpoIbFUrq9HRT40OY9GuVGgZhXYTqpZ5mc6pWZdzm0zhQN6ZAiVVYeCF3Y52DzA
+        Pju/n82Ji/Agz0lxo1oQTMfdk0pvF3XrHYf9U7Icm1cq16UsEibWTo4eDVt9JhtS
+        f45EcTECgYEA7w+w4wX41PBtqeTiNWS2YbT6D6/HBG+7IDCndAZz7SkZ/LQZBT5b
+        PTYezuFHywgsgxMYvQCWt59w/qpOJDF0+T1BJE/l86xiEpTgfL6be96NRyHH7U/1
+        6qzuHF4YuiM9RQwwjZjwPQP6XmEfajqFzKajZAbahD4410jeKeB1am0CgYEA4yOt
+        X++pabvotuzpWnZNJULrfgfV9nBi5DKGtMVZ30xix4pkEwLYfg6An3Qnrcexll9n
+        58xEfEfpKrTB4nTerZx9KpDX8cYqX6KRyOeR+abvlOoyP+enJgkbCAA/L+xwxDn3
+        SuActaZ0PVVS7n6tqs58gY5CGy4RC6/9ywV6MjcCgYEAjIZwuEK+bo2WKRQ+VJyL
+        CQxVIft1xYnYOafgBzfz1Skf+Yf0XTy2bVju6zVJ+nMnlzUWiaNa9T1oMorxvBzG
+        Yew76ph816wxSjLxcuKoizvbWEDnQPyL1hMpNMurRV+JmJj9wX5xWayI9AmracpU
+        9GPQD/Bnau0YhJR047Dp1FECgYAV92NS/diCczvERREkQIChc+FWZOeaV7AYpZJF
+        dTiF0dtTtNyMwh+xwTFLOm6D7eYMxtlDn4uYAVRZXvXJMsg+Pf4U2cEojqOWcCBt
+        L4f8ftp4qlWFvJ97nDHTCkMSHWmicICr6xSbtKdVLyVAD1w4QpPj66AVBNV9Ld37
+        fmIc7QKBgQDuZsezCEwELkU+L+x02xSjp74ojma37pc1Pfe9ZHOmn145MyaUVJOu
+        0LaUje49wyK+7xBjAmfWLdIfTHUWgF40nJmCaTh37WCR6FI0uUWqD52a8SQIWgTg
+        tG4PQQv5uZdqqCBTKfAIOG4ollqg9c0Mno8jETHTaaiZSnDcHmhuHg==
+        -----END RSA PRIVATE KEY-----
+
+security:
+  oauth2:
+    resource:
+      jwt:
+        key-value: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDUHDrlrn9fW08gwY621ZhvfGrajJIy1OYUIaBe/+Yt2g1JQ78OFM3aVw5Byp0dwk2GhJ3GtXvvv8XX6P3j46uPuIQwdXDpx7D0UafovCpQuu2fdgMBBfFPy4jbwv5JeC9j7FDbAA7C62x7TSD5gvQFrxTrdq8HsBgCBAOQyvvFj0vDAdxS0zCpEK4Rzixt+de/6My7pXeU0Jh3WXyTogQlstmPDl5mAEpiblMd4M4TKEACBvbZynyq4OuBANE2eecak8IwzxC8qtpF2MgBV4xHmpSFyn19S2RMXxEpp9uBshJPqmo/7w9VCRPi41pBLnMDPIr6Q+Mub6QvSU4A9Sdr tim@snor
