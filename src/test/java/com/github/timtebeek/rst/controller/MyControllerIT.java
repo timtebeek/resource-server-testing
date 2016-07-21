@@ -1,5 +1,6 @@
 package com.github.timtebeek.rst.controller;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import com.github.timtebeek.rst.MyApp;
@@ -23,7 +24,6 @@ import org.springframework.web.client.RestOperations;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = MyApp.class)
 @WebIntegrationTest(randomPort = true)
-@OAuth2ContextConfiguration(MyDetails.class)
 public class MyControllerIT implements RestTemplateHolder {
 	@Value("http://localhost:${local.server.port}")
 	@Getter
@@ -37,18 +37,38 @@ public class MyControllerIT implements RestTemplateHolder {
 	public OAuth2ContextSetup	context			= OAuth2ContextSetup.standard(this);
 
 	@Test
-	public void testHelloOAuth2WithRole() {
+	@OAuth2ContextConfiguration(UserDetails.class)
+	public void testHelloUser() {
 		ResponseEntity<String> entity = getRestTemplate().getForEntity(host + "/hello", String.class);
 		assertTrue(entity.getStatusCode().is2xxSuccessful());
+		assertEquals("Hello user", entity.getBody());
+	}
+
+	@Test
+	@OAuth2ContextConfiguration(AliceDetails.class)
+	public void testHelloAlice() {
+		ResponseEntity<String> entity = getRestTemplate().getForEntity(host + "/hello", String.class);
+		assertTrue(entity.getStatusCode().is2xxSuccessful());
+		assertEquals("Hello alice", entity.getBody());
 	}
 }
 
-class MyDetails extends ResourceOwnerPasswordResourceDetails {
-	public MyDetails(final Object obj) {
+class UserDetails extends ResourceOwnerPasswordResourceDetails {
+	public UserDetails(final Object obj) {
 		MyControllerIT it = (MyControllerIT) obj;
 		setAccessTokenUri(it.getHost() + "/oauth/token");
 		setClientId("myclientwith");
 		setUsername("user");
+		setPassword("password");
+	}
+}
+
+class AliceDetails extends ResourceOwnerPasswordResourceDetails {
+	public AliceDetails(final Object obj) {
+		MyControllerIT it = (MyControllerIT) obj;
+		setAccessTokenUri(it.getHost() + "/oauth/token");
+		setClientId("myclientwith");
+		setUsername("alice");
 		setPassword("password");
 	}
 }
