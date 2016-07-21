@@ -22,9 +22,9 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 @Component
 public class OAuthHelper {
 	// For use with MockMvc
-	public RequestPostProcessor bearerToken(final String clientid) {
+	public RequestPostProcessor bearerToken(final String clientid, final String user) {
 		return mockRequest -> {
-			OAuth2AccessToken token = createAccessToken(clientid);
+			OAuth2AccessToken token = createAccessToken(clientid, user);
 			mockRequest.addHeader("Authorization", "Bearer " + token.getValue());
 			return mockRequest;
 		};
@@ -35,7 +35,7 @@ public class OAuthHelper {
 	@Autowired
 	AuthorizationServerTokenServices	tokenservice;
 
-	OAuth2AccessToken createAccessToken(final String clientId) {
+	OAuth2AccessToken createAccessToken(final String clientId, final String user) {
 		// Look up authorities, resourceIds and scopes based on clientId
 		ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
 		Collection<GrantedAuthority> authorities = client.getAuthorities();
@@ -54,7 +54,7 @@ public class OAuthHelper {
 				resourceIds, redirectUrl, responseTypes, extensionProperties);
 
 		// Create OAuth2AccessToken
-		User userPrincipal = new User("user", "", true, true, true, true, authorities);
+		User userPrincipal = new User(user, "", true, true, true, true, authorities);
 		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userPrincipal, null, authorities);
 		OAuth2Authentication auth = new OAuth2Authentication(oAuth2Request, authenticationToken);
 		return tokenservice.createAccessToken(auth);
