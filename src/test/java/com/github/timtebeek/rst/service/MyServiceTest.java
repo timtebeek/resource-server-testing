@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -16,7 +17,13 @@ public class MyServiceTest {
 
 	@Test
 	@WithMockUser
-	public void testGreeting() {
+	public void testGreetingWithMockUser() {
+		myservice.greeting();
+	}
+
+	@Test(expected = AccessDeniedException.class)
+	@WithMockUser("eve")
+	public void testGreetingWithMockEve() {
 		myservice.greeting();
 	}
 }
