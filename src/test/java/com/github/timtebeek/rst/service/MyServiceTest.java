@@ -1,6 +1,7 @@
 package com.github.timtebeek.rst.service;
 
 import com.github.timtebeek.rst.MyApp;
+import com.github.timtebeek.rst.config.WithOAuth2Authentication;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,18 @@ public class MyServiceTest {
 	@Test(expected = AccessDeniedException.class)
 	@WithMockUser("eve")
 	public void testGreetingWithMockEve() {
+		myservice.greeting();
+	}
+
+	@Test
+	@WithOAuth2Authentication
+	public void testGreetingWithOAuth2AuthenticationUser() {
+		myservice.greeting();
+	}
+
+	@Test(expected = AccessDeniedException.class)
+	@WithOAuth2Authentication(username = "eve")
+	public void testGreetingWithOAuth2AuthenticationEve() {
 		myservice.greeting();
 	}
 }

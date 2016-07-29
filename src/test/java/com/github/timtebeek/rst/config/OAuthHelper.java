@@ -39,6 +39,11 @@ public class OAuthHelper {
 	AuthorizationServerTokenServices	tokenservice;
 
 	OAuth2AccessToken createAccessToken(final String clientId, final String username) {
+		OAuth2Authentication auth = oAuth2Authentication(clientId, username);
+		return tokenservice.createAccessToken(auth);
+	}
+
+	public OAuth2Authentication oAuth2Authentication(final String clientId, final String username) {
 		// Look up authorities, resourceIds and scopes based on clientId
 		ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
 		Collection<GrantedAuthority> authorities = client.getAuthorities();
@@ -59,6 +64,6 @@ public class OAuthHelper {
 		UserDetails user = userDetailsService.loadUserByUsername(username);
 		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, authorities);
 		OAuth2Authentication auth = new OAuth2Authentication(oAuth2Request, authenticationToken);
-		return tokenservice.createAccessToken(auth);
+		return auth;
 	}
 }
