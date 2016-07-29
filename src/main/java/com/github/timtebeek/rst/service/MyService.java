@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 @Service
 @SuppressWarnings("static-method")
 public class MyService {
-	@PreAuthorize("principal == 'alice' or principal == 'user'")
+	@PreAuthorize("authentication.name == 'alice' or authentication.name == 'user'")
 	public String greeting() {
 		return "Hello ";
 	}
