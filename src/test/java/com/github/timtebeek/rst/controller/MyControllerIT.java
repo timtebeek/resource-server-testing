@@ -18,6 +18,7 @@ import org.springframework.security.oauth2.client.test.OAuth2ContextConfiguratio
 import org.springframework.security.oauth2.client.test.OAuth2ContextSetup;
 import org.springframework.security.oauth2.client.test.RestTemplateHolder;
 import org.springframework.security.oauth2.client.token.grant.password.ResourceOwnerPasswordResourceDetails;
+import org.springframework.security.oauth2.common.exceptions.UserDeniedAuthorizationException;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestOperations;
 
@@ -40,7 +41,7 @@ public class MyControllerIT implements RestTemplateHolder {
 	@OAuth2ContextConfiguration(UserDetails.class)
 	public void testHelloUser() {
 		ResponseEntity<String> entity = getRestTemplate().getForEntity(host + "/hello", String.class);
-		assertTrue(entity.getStatusCode().is2xxSuccessful());
+		assertTrue(entity.toString(), entity.getStatusCode().is2xxSuccessful());
 		assertEquals("Hello user", entity.getBody());
 	}
 
@@ -48,8 +49,14 @@ public class MyControllerIT implements RestTemplateHolder {
 	@OAuth2ContextConfiguration(AliceDetails.class)
 	public void testHelloAlice() {
 		ResponseEntity<String> entity = getRestTemplate().getForEntity(host + "/hello", String.class);
-		assertTrue(entity.getStatusCode().is2xxSuccessful());
+		assertTrue(entity.toString(), entity.getStatusCode().is2xxSuccessful());
 		assertEquals("Hello alice", entity.getBody());
+	}
+
+	@Test(expected=UserDeniedAuthorizationException.class)
+	@OAuth2ContextConfiguration(EveDetails.class)
+	public void testHelloEve() {
+		getRestTemplate().getForEntity(host + "/hello", String.class);
 	}
 }
 
@@ -69,6 +76,16 @@ class AliceDetails extends ResourceOwnerPasswordResourceDetails {
 		setAccessTokenUri(it.getHost() + "/oauth/token");
 		setClientId("myclientwith");
 		setUsername("alice");
+		setPassword("password");
+	}
+}
+
+class EveDetails extends ResourceOwnerPasswordResourceDetails {
+	public EveDetails(final Object obj) {
+		MyControllerIT it = (MyControllerIT) obj;
+		setAccessTokenUri(it.getHost() + "/oauth/token");
+		setClientId("myclientwith");
+		setUsername("eve");
 		setPassword("password");
 	}
 }

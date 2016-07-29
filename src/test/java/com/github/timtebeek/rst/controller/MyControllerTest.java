@@ -57,4 +57,11 @@ public class MyControllerTest {
 		RequestPostProcessor bearerToken = helper.bearerToken("myclientwithout", "user");
 		mvc.perform(get("/hello").with(bearerToken)).andExpect(status().isForbidden());
 	}
+
+	@Test
+	public void testHelloAliceEveDenied() throws Exception {
+		RequestPostProcessor bearerToken = helper.bearerToken("myclientwith", "eve");
+		mvc.perform(get("/hello").with(bearerToken)).andExpect(status().isForbidden());
+	}
+
 }
