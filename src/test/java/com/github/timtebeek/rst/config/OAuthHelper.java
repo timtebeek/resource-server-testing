@@ -9,7 +9,8 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
@@ -33,9 +34,11 @@ public class OAuthHelper {
 	@Autowired
 	ClientDetailsService				clientDetailsService;
 	@Autowired
+	UserDetailsService					userDetailsService;
+	@Autowired
 	AuthorizationServerTokenServices	tokenservice;
 
-	OAuth2AccessToken createAccessToken(final String clientId, final String user) {
+	OAuth2AccessToken createAccessToken(final String clientId, final String username) {
 		// Look up authorities, resourceIds and scopes based on clientId
 		ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
 		Collection<GrantedAuthority> authorities = client.getAuthorities();
@@ -50,12 +53,11 @@ public class OAuthHelper {
 		Map<String, Serializable> extensionProperties = Collections.emptyMap();
 
 		// Create request
-		OAuth2Request oAuth2Request = new OAuth2Request(requestParameters, clientId, authorities, approved, scopes,
-				resourceIds, redirectUrl, responseTypes, extensionProperties);
+		OAuth2Request oAuth2Request = new OAuth2Request(requestParameters, clientId, authorities, approved, scopes, resourceIds, redirectUrl, responseTypes, extensionProperties);
 
 		// Create OAuth2AccessToken
-		User userPrincipal = new User(user, "", true, true, true, true, authorities);
-		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userPrincipal, null, authorities);
+		UserDetails user = userDetailsService.loadUserByUsername(username);
+		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, authorities);
 		OAuth2Authentication auth = new OAuth2Authentication(oAuth2Request, authenticationToken);
 		return tokenservice.createAccessToken(auth);
 	}
