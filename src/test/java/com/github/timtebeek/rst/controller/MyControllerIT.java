@@ -3,16 +3,14 @@ package com.github.timtebeek.rst.controller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.github.timtebeek.rst.MyApp;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
-import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.test.OAuth2ContextConfiguration;
 import org.springframework.security.oauth2.client.test.OAuth2ContextSetup;
@@ -21,18 +19,17 @@ import org.springframework.security.oauth2.client.token.grant.password.ResourceO
 import org.springframework.security.oauth2.common.exceptions.UserDeniedAuthorizationException;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestOperations;
+import org.springframework.web.client.RestTemplate;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = MyApp.class)
-@WebIntegrationTest(randomPort = true)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class MyControllerIT implements RestTemplateHolder {
 	@Value("http://localhost:${local.server.port}")
-	@Getter
-	String						host;
+	protected String			host;
 
 	@Getter
 	@Setter
-	RestOperations				restTemplate	= new TestRestTemplate();
+	private RestOperations		restTemplate	= new RestTemplate();
 
 	@Rule
 	public OAuth2ContextSetup	context			= OAuth2ContextSetup.standard(this);
@@ -40,7 +37,7 @@ public class MyControllerIT implements RestTemplateHolder {
 	@Test
 	@OAuth2ContextConfiguration(UserDetails.class)
 	public void testHelloUser() {
-		ResponseEntity<String> entity = getRestTemplate().getForEntity(host + "/hello", String.class);
+		ResponseEntity<String> entity = restTemplate.getForEntity(host + "/hello", String.class);
 		assertTrue(entity.toString(), entity.getStatusCode().is2xxSuccessful());
 		assertEquals("Hello user", entity.getBody());
 	}
@@ -48,22 +45,22 @@ public class MyControllerIT implements RestTemplateHolder {
 	@Test
 	@OAuth2ContextConfiguration(AliceDetails.class)
 	public void testHelloAlice() {
-		ResponseEntity<String> entity = getRestTemplate().getForEntity(host + "/hello", String.class);
+		ResponseEntity<String> entity = restTemplate.getForEntity(host + "/hello", String.class);
 		assertTrue(entity.toString(), entity.getStatusCode().is2xxSuccessful());
 		assertEquals("Hello alice", entity.getBody());
 	}
 
-	@Test(expected=UserDeniedAuthorizationException.class)
+	@Test(expected = UserDeniedAuthorizationException.class)
 	@OAuth2ContextConfiguration(EveDetails.class)
 	public void testHelloEve() {
-		getRestTemplate().getForEntity(host + "/hello", String.class);
+		restTemplate.getForEntity(host + "/hello", String.class);
 	}
 }
 
 class UserDetails extends ResourceOwnerPasswordResourceDetails {
 	public UserDetails(final Object obj) {
 		MyControllerIT it = (MyControllerIT) obj;
-		setAccessTokenUri(it.getHost() + "/oauth/token");
+		setAccessTokenUri(it.host + "/oauth/token");
 		setClientId("myclientwith");
 		setUsername("user");
 		setPassword("password");
@@ -73,7 +70,7 @@ class UserDetails extends ResourceOwnerPasswordResourceDetails {
 class AliceDetails extends ResourceOwnerPasswordResourceDetails {
 	public AliceDetails(final Object obj) {
 		MyControllerIT it = (MyControllerIT) obj;
-		setAccessTokenUri(it.getHost() + "/oauth/token");
+		setAccessTokenUri(it.host + "/oauth/token");
 		setClientId("myclientwith");
 		setUsername("alice");
 		setPassword("password");
@@ -83,7 +80,7 @@ class AliceDetails extends ResourceOwnerPasswordResourceDetails {
 class EveDetails extends ResourceOwnerPasswordResourceDetails {
 	public EveDetails(final Object obj) {
 		MyControllerIT it = (MyControllerIT) obj;
-		setAccessTokenUri(it.getHost() + "/oauth/token");
+		setAccessTokenUri(it.host + "/oauth/token");
 		setClientId("myclientwith");
 		setUsername("eve");
 		setPassword("password");
