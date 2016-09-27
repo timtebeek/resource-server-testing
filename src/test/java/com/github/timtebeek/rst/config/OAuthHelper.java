@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,28 +21,23 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 @Component
+@AllArgsConstructor
 public class OAuthHelper {
+	ClientDetailsService				clientDetailsService;
+	UserDetailsService					userDetailsService;
+	AuthorizationServerTokenServices	tokenservice;
+
 	// For use with MockMvc
-	public RequestPostProcessor bearerToken(final String clientid, final String user) {
+	public RequestPostProcessor bearerToken(final String clientid, final String username) {
 		return mockRequest -> {
-			OAuth2AccessToken token = createAccessToken(clientid, user);
+			OAuth2Authentication auth = oAuth2Authentication(clientid, username);
+			OAuth2AccessToken token = tokenservice.createAccessToken(auth);
 			mockRequest.addHeader("Authorization", "Bearer " + token.getValue());
 			return mockRequest;
 		};
 	}
 
-	@Autowired
-	ClientDetailsService				clientDetailsService;
-	@Autowired
-	UserDetailsService					userDetailsService;
-	@Autowired
-	AuthorizationServerTokenServices	tokenservice;
-
-	OAuth2AccessToken createAccessToken(final String clientId, final String username) {
-		OAuth2Authentication auth = oAuth2Authentication(clientId, username);
-		return tokenservice.createAccessToken(auth);
-	}
-
+	// For use with @WithOAuth2Authentication
 	public OAuth2Authentication oAuth2Authentication(final String clientId, final String username) {
 		// Look up authorities, resourceIds and scopes based on clientId
 		ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
