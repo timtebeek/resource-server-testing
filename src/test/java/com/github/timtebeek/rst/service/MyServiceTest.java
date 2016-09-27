@@ -1,17 +1,16 @@
 package com.github.timtebeek.rst.service;
 
-import com.github.timtebeek.rst.MyApp;
 import com.github.timtebeek.rst.config.WithOAuth2Authentication;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(classes = MyApp.class)
+@SpringBootTest
 public class MyServiceTest {
 	@Autowired
 	MyService myservice;
