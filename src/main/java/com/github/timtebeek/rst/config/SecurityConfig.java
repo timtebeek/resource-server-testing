@@ -15,7 +15,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 public class SecurityConfig extends ResourceServerConfigurerAdapter {
 	@Override
 	public void configure(final HttpSecurity http) throws Exception {
-		http.authorizeRequests().anyRequest().access("#oauth2.hasScope('myscope')");
+		http.authorizeRequests().anyRequest().denyAll();
 	}
 
 	@Override

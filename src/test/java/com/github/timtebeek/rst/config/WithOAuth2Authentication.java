@@ -13,4 +13,6 @@ public @interface WithOAuth2Authentication {
 	String clientId() default "myclientwith";
 
 	String username() default "user";
+
+	String scope() default "myscope";
 }

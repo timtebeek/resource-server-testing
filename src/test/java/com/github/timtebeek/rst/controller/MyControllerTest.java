@@ -4,53 +4,59 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-import com.github.timtebeek.rst.config.OAuthHelper;
+import javax.servlet.ServletException;
+
+import com.github.timtebeek.rst.config.WithOAuth2Authentication;
 import com.github.timtebeek.rst.service.MyService;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan.Filter;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
+import org.springframework.web.context.WebApplicationContext;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(includeFilters = @Filter(type = FilterType.REGEX, pattern = "com\\.github\\.timtebeek\\.rst\\.config\\..*"))
+@SpringBootTest
 public class MyControllerTest {
+	private MockMvc					mvc;
 	@Autowired
-	private MockMvc		mvc;
-
-	@Autowired
-	private OAuthHelper	helper;
-
+	private WebApplicationContext	webapp;
 	@MockBean
-	private MyService	service;
+	private MyService				service;
 
 	@Before
 	public void setup() {
+		mvc = webAppContextSetup(webapp).build();
 		when(service.greeting()).thenReturn("Hello ");
 	}
 
 	@Test
+	@WithOAuth2Authentication
 	public void testHelloUserWithRole() throws Exception {
-		RequestPostProcessor bearerToken = helper.bearerToken("myclientwith", "user");
-		mvc.perform(get("/hello").with(bearerToken)).andExpect(status().isOk()).andExpect(content().string("Hello user"));
+		mvc.perform(get("/hello")).andExpect(status().isOk()).andExpect(content().string("Hello user"));
 	}
 
 	@Test
+	@WithOAuth2Authentication(username = "alice")
 	public void testHelloAliceWithRole() throws Exception {
-		RequestPostProcessor bearerToken = helper.bearerToken("myclientwith", "alice");
-		mvc.perform(get("/hello").with(bearerToken)).andExpect(status().isOk()).andExpect(content().string("Hello alice"));
+		mvc.perform(get("/hello")).andExpect(status().isOk()).andExpect(content().string("Hello alice"));
 	}
 
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
 	@Test
+	@WithOAuth2Authentication(scope = "notmyscope")
 	public void testHelloWithoutRole() throws Exception {
-		RequestPostProcessor bearerToken = helper.bearerToken("myclientwithout", "user");
-		mvc.perform(get("/hello").with(bearerToken)).andExpect(status().isForbidden());
+		thrown.expect(ServletException.class);
+		thrown.expectMessage("Request processing failed; nested exception is org.springframework.security.access.AccessDeniedException: Access is denied");
+		mvc.perform(get("/hello"));
 	}
 }
