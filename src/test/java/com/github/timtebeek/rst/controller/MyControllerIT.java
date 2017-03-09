@@ -12,11 +12,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.resource.OAuth2AccessDeniedException;
 import org.springframework.security.oauth2.client.test.OAuth2ContextConfiguration;
 import org.springframework.security.oauth2.client.test.OAuth2ContextSetup;
 import org.springframework.security.oauth2.client.test.RestTemplateHolder;
 import org.springframework.security.oauth2.client.token.grant.password.ResourceOwnerPasswordResourceDetails;
-import org.springframework.security.oauth2.common.exceptions.UserDeniedAuthorizationException;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
@@ -50,7 +50,7 @@ public class MyControllerIT implements RestTemplateHolder {
 		assertEquals("Hello alice", entity.getBody());
 	}
 
-	@Test(expected = UserDeniedAuthorizationException.class)
+	@Test(expected = OAuth2AccessDeniedException.class)
 	@OAuth2ContextConfiguration(EveDetails.class)
 	public void testHelloEve() {
 		restTemplate.getForEntity(host + "/hello", String.class);
