@@ -35,3 +35,5 @@ security:
     resource:
       jwt:
         key-value: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDUHDrlrn9fW08gwY621ZhvfGrajJIy1OYUIaBe/+Yt2g1JQ78OFM3aVw5Byp0dwk2GhJ3GtXvvv8XX6P3j46uPuIQwdXDpx7D0UafovCpQuu2fdgMBBfFPy4jbwv5JeC9j7FDbAA7C62x7TSD5gvQFrxTrdq8HsBgCBAOQyvvFj0vDAdxS0zCpEK4Rzixt+de/6My7pXeU0Jh3WXyTogQlstmPDl5mAEpiblMd4M4TKEACBvbZynyq4OuBANE2eecak8IwzxC8qtpF2MgBV4xHmpSFyn19S2RMXxEpp9uBshJPqmo/7w9VCRPi41pBLnMDPIr6Q+Mub6QvSU4A9Sdr tim@snor
+      # As per: https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.5-Release-Notes#oauth-2-resource-filter
+      filter-order: 3
